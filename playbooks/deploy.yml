@@ -1,0 +1,37 @@
+---
+- name: Deploy Arista fabric configuration
+  hosts: all
+  connection: local
+  gather_facts: false
+  collections:
+    - arista.avd
+    - ansible.scm
+  vars:
+    artifacts_repository: https://github.com/arista-netdevops-community/avd-aap
+    artifacts_branch: main
+    artifacts_folder: artifacts
+    changes_name: "Configuration changes by Ansible Automation Platform"
+    changes_description: "Job: https://{{ awx_execution_node }}/execution/jobs/playbook/{{ awx_job_id }}"
+
+  tasks:
+    - name: Retrieve latest artifacts
+      delegate_to: localhost
+      run_once: true
+      git_retrieve:
+        origin:
+          url: "{{ artifacts_repository }}"
+        branch:
+          name: "{{ artifacts_branch }}"
+          duplicate_detection: false
+      register: repository
+
+    - name: Deploy configurations and tags to CloudVision
+      delegate_to: cloudvision
+      import_role:
+        name: cv_deploy
+      vars:
+        root_dir: "{{ repository['path'] }}/{{ artifacts_folder }}"
+        cv_register_detailed_results: true
+        cv_workspace_name: "{{ changes_name }}"
+        cv_workspace_description: "{{ changes_description }}"
+        cv_change_control_description: "{{ changes_description }}"

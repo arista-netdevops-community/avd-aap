@@ -1,0 +1,100 @@
+---
+fabric_name: PARIS
+
+##########
+# Design #
+##########
+underlay_routing_protocol: ebgp
+overlay_routing_protocol: ebgp
+
+bgp_peer_groups:
+  # all passwords set to "arista"
+  evpn_overlay_peers:
+    password: Q4fqtbqcZ7oQuKfuWtNGRQ==
+  ipv4_underlay_peers:
+    password: 7x4B4rnJhZB438m9+BrBfQ==
+  mlag_ipv4_underlay_peer:
+    password: 4b21pAdCvWeAqpcKDFMdWw==
+
+##############
+# Interfaces #
+##############
+p2p_uplinks_mtu: 1500
+
+switchport_default:
+  mode: routed
+
+default_interfaces:
+  - types: [ spine ]
+    platforms: [ default ]
+    downlink_interfaces: [ Ethernet1-4/1 ]
+  - types: [ l3leaf ]
+    platforms: [ default ]
+    uplink_interfaces: [ Ethernet49-50/1 ]
+    mlag_interfaces: [ Ethernet55-56/1 ]
+
+custom_platform_settings:
+- platforms:
+  - cEOSLab
+  feature_support:
+    bgp_update_wait_for_convergence: false
+    bgp_update_wait_install: false
+    interface_storm_control: false
+    queue_monitor_length_notify: false
+  management_interface: Management1
+  reload_delay:
+    mlag: 300
+    non_mlag: 330
+
+
+##############
+# Management #
+##############
+mgmt_gateway: 172.20.0.1
+ipv6_mgmt_gateway: fd00:6265:b424:a8b8::1
+
+management_eapi:
+  default_services: false
+
+custom_structured_configuration_management_interfaces:
+  - name: Management1
+    vrf: MGMT
+    lldp:
+      transmit: False
+      receive: False
+
+custom_structured_configuration_daemon_terminattr:
+  cvaddrs: ['apiserver.arista.io:443']
+  cvvrf: MGMT
+  smashexcludes: ale,flexCounter,hardware,kni,pulse,strata
+  cvauth:
+    method: certs
+    cert_file: /persist/secure/ssl/terminattr/primary/certs/client.crt
+    key_file: /persist/secure/ssl/terminattr/primary/keys/client.key
+
+name_servers:
+  - 1.1.1.1
+
+timezone: Europe/Paris
+
+ntp_settings:
+  servers:
+    - name: 0.pool.ntp.org
+
+#######
+# AAA #
+#######
+
+local_users:
+  - name: admin
+    privilege: 15
+    role: network-admin
+    sha512_password: "$6$ZGwJJdGz2X/bihyP$nqB/UKt2n3GBaeZS2/gMHTvIk2NjhJ3rk2/Sge.OBOvCgCNXSx7qmMg.HolGCMTcuM.qZjJXJx9FUwgmuoJAl0"
+  - name: mtache
+    privilege: 15
+    role: network-admin
+    sha512_password: "$6$ZGwJJdGz2X/bihyP$nqB/UKt2n3GBaeZS2/gMHTvIk2NjhJ3rk2/Sge.OBOvCgCNXSx7qmMg.HolGCMTcuM.qZjJXJx9FUwgmuoJAl0"
+
+custom_structured_configuration_aaa_authorization:
+  exec:
+    default: local

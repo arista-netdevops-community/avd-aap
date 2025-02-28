@@ -1,0 +1,28 @@
+name: Save configuration
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'artifacts/intended/**'
+      - 'artifacts/documentation/**'
+
+jobs:
+  save-configuration:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Generate artifact name
+      id: generate-name
+      run: echo "artifact=${{ github.event.repository.name }}_AVD-configs_$(date +'%Y-%m-%d_%H.%M.%S')" >> $GITHUB_OUTPUT
+    - name: Save artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ steps.generate-name.outputs.artifact }}
+        path: |
+          artifacts/intended/
+          artifacts/documentation/
+    - name: Save summary
+      run: |
+        cat artifacts/documentation/fabric/*-documentation.md >> $GITHUB_STEP_SUMMARY
