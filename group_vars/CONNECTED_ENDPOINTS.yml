@@ -1,0 +1,49 @@
+---
+port_profiles:
+  - profile: server
+    native_vlan: 4092
+    mode: trunk
+    spanning_tree_portfast: edge
+    port_channel:
+      mode: active
+  - profile: ixia
+    vlans: 100,101
+    native_vlan: 4092
+    mode: trunk
+    spanning_tree_portfast: edge
+
+servers:
+  - name: server1
+    adapters:
+      - endpoint_ports: [ eth1, eth2 ]
+        switch_ports: [ Ethernet1, Ethernet1 ]
+        switches: [ mtache-leaf1a, mtache-leaf1b ]
+        profile: server
+        vlans: 11,21,100,101
+
+  - name: server2
+    adapters:
+      - endpoint_ports: [ eth1, eth2 ]
+        switch_ports: [ Ethernet1, Ethernet1 ]
+        switches: [ mtache-leaf2a, mtache-leaf2b ]
+        profile: server
+        vlans: 12,22,100,101
+  
+  - name: server3
+    adapters:
+      - endpoint_ports: [ Ethernet1 ]
+        switch_ports: [ Ethernet3 ]
+        switches: [ mtache-leaf2a ]
+        vlans: 100
+        mode: trunk
+
+  - name: ixia
+    adapters:
+      - endpoint_ports: [ eth1 ]
+        switch_ports: [ Ethernet2 ]
+        switches: [ mtache-leaf1a ]
+        profile: ixia
+      - endpoint_ports: [ eth2 ]
+        switch_ports: [ Ethernet2 ]
+        switches: [ mtache-leaf2a ]
+        profile: ixia

@@ -1,0 +1,4 @@
+---
+custom_structured_configuration_router_multicast:
+  ipv4:
+    software_forwarding: sfe

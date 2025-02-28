@@ -1,0 +1,220 @@
+---
+fabric_name: CACTUS
+
+underlay_multicast: True
+evpn_multicast: True
+
+underlay_routing_protocol: ebgp
+overlay_routing_protocol: ebgp
+
+bgp_peer_groups:
+  # all passwords set to "arista"
+  evpn_overlay_peers:
+    password: Q4fqtbqcZ7oQuKfuWtNGRQ==
+  ipv4_underlay_peers:
+    password: 7x4B4rnJhZB438m9+BrBfQ==
+  mlag_ipv4_underlay_peer:
+    password: 4b21pAdCvWeAqpcKDFMdWw==
+
+custom_structured_configuration_aliases: |
+  alias srnz show interface counter rate | nz
+
+custom_structured_configuration_load_interval:
+  default: 1
+
+##############
+# Interfaces #
+##############
+# P2P interfaces MTU, includes VLANs 4093 and 4094 that are over peer-link
+p2p_uplinks_mtu: 1500
+
+switchport_default:
+  mode: routed
+
+default_interfaces:
+  - types: [ spine ]
+    platforms: [ default ]
+    downlink_interfaces: [ Ethernet1-4/1 ]
+  - types: [ l3leaf ]
+    platforms: [ default ]
+    uplink_interfaces: [ Ethernet49-50/1 ]
+    mlag_interfaces: [ Ethernet55-56/1 ]
+
+platform_settings:
+- feature_support:
+    queue_monitor_length_notify: false
+  platforms:
+  - default
+  reload_delay:
+    mlag: 300
+    non_mlag: 330
+- feature_support:
+    queue_monitor_length_notify: false
+  platforms:
+  - 7050X3
+  reload_delay:
+    mlag: 300
+    non_mlag: 330
+  trident_forwarding_table_partition: flexible exact-match 16384 l2-shared 98304 l3-shared
+    131072
+- feature_support:
+    poe: true
+    queue_monitor_length_notify: false
+  platforms:
+  - 720XP
+  reload_delay:
+    mlag: 300
+    non_mlag: 330
+  trident_forwarding_table_partition: flexible exact-match 16000 l2-shared 18000 l3-shared
+    22000
+- feature_support:
+    poe: true
+    queue_monitor_length_notify: false
+  management_interface: Management0
+  platforms:
+  - '750'
+  - '755'
+  - '758'
+  reload_delay:
+    mlag: 300
+    non_mlag: 330
+- feature_support:
+    poe: true
+    queue_monitor_length_notify: false
+  platforms:
+  - 720DP
+  - 722XP
+  - 710P
+  reload_delay:
+    mlag: 300
+    non_mlag: 330
+- feature_support:
+    per_interface_mtu: false
+    queue_monitor_length_notify: false
+  platforms:
+  - 7010TX
+  reload_delay:
+    mlag: 300
+    non_mlag: 330
+- lag_hardware_only: true
+  platforms:
+  - 7280R
+  - 7280R2
+  - 7020R
+  reload_delay:
+    mlag: 900
+    non_mlag: 1020
+  tcam_profile: vxlan-routing
+- platforms:
+  - 7280R3
+  reload_delay:
+    mlag: 900
+    non_mlag: 1020
+- lag_hardware_only: true
+  management_interface: Management0
+  platforms:
+  - 7500R
+  - 7500R2
+  reload_delay:
+    mlag: 900
+    non_mlag: 1020
+  tcam_profile: vxlan-routing
+- management_interface: Management0
+  platforms:
+  - 7500R3
+  - 7800R3
+  reload_delay:
+    mlag: 900
+    non_mlag: 1020
+- feature_support:
+    bgp_update_wait_for_convergence: true
+    bgp_update_wait_install: false
+    interface_storm_control: true
+    queue_monitor_length_notify: false
+  management_interface: Management1/1
+  platforms:
+  - 7358X4
+  reload_delay:
+    mlag: 300
+    non_mlag: 330
+- management_interface: Management0
+  platforms:
+  - 7368X4
+  reload_delay:
+    mlag: 300
+    non_mlag: 330
+- management_interface: Management0
+  platforms:
+  - 7300X3
+  reload_delay:
+    mlag: 1200
+    non_mlag: 1320
+  trident_forwarding_table_partition: flexible exact-match 16384 l2-shared 98304 l3-shared
+    131072
+- feature_support:
+    bgp_update_wait_for_convergence: false
+    bgp_update_wait_install: false
+    interface_storm_control: false
+    queue_monitor_length_notify: false
+  platforms:
+  - VEOS
+  - VEOS-LAB
+  - vEOS
+  - vEOS-lab
+  reload_delay:
+    mlag: 300
+    non_mlag: 330
+- feature_support:
+    bgp_update_wait_for_convergence: false
+    bgp_update_wait_install: false
+    interface_storm_control: false
+    queue_monitor_length_notify: false
+  management_interface: Management1
+  platforms:
+  - CEOS
+  - cEOS
+  - ceos
+  - cEOSLab
+  reload_delay:
+    mlag: 300
+    non_mlag: 330
+- feature_support:
+    bgp_update_wait_for_convergence: true
+    bgp_update_wait_install: false
+    interface_storm_control: false
+    queue_monitor_length_notify: false
+  management_interface: Management1/1
+  platforms:
+  - AWE-5310
+  - AWE-5510
+  - AWE-7250R
+  - AWE-7230R
+- feature_support:
+    bgp_update_wait_for_convergence: true
+    bgp_update_wait_install: false
+    interface_storm_control: false
+    poe: true
+    queue_monitor_length_notify: false
+  management_interface: Management1
+  platforms:
+  - AWE-7220R
+custom_structured_configuration_management_interfaces:
+  - name: Management1
+    vrf: MGMT
+    lldp:
+      transmit: False
+      receive: False
+
+custom_structured_configuration_sflow:
+  sample: 1
+  polling_interval: 2
+  destinations:
+    - destination: 127.0.0.1
+  source_interface: Loopback0
+  run: True
+
+##############
+# Management #
+##############
+mgmt_gateway: 172.20.0.1
+ipv6_mgmt_gateway: fd00:6265:b424:a8b8::1

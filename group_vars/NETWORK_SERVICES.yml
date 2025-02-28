@@ -1,0 +1,72 @@
+---
+# Workaround while waiting for https://github.com/aristanetworks/avd/issues/2033 to be implemented
+custom_structured_configuration_vxlan_interface:
+  vxlan1:
+    eos_cli: |
+      vxlan vlan 100 flood group 232.232.128.100
+      vxlan vlan 101 flood group 232.232.128.101
+
+custom_structured_configuration_ip_igmp_snooping:
+  proxy: True
+
+tenants:
+  - name: MULTICAST
+    mac_vrf_vni_base: 20000
+    evpn_l2_multicast:
+      enabled: true
+      underlay_l2_multicast_group_ipv4_pool: 232.232.0.0/20
+      underlay_l2_multicast_group_ipv4_pool_offset: 1
+    l2vlans:
+      - id: 100
+        name: MULTICAST_VLAN100
+        tags: [RACK_LEAF1, RACK_LEAF2]
+    vrfs:
+      - name: MULTICAST
+        vrf_id: 100
+        vrf_vni: 30100
+        vtep_diagnostic:
+          loopback: 100
+          loopback_ip_range: 10.255.100.0/27
+        svis:
+          - id: 101
+            name: MULTICAST_VLAN101
+            tags: [RACK_LEAF1, RACK_LEAF2]
+            enabled: true
+            ip_address_virtual: 10.10.101.1/24
+  - name: TENANT1
+    mac_vrf_vni_base: 10000
+    vrfs:
+      - name: VRF10
+        vrf_id: 10
+        vrf_vni: 30010
+        vtep_diagnostic:
+          loopback: 10
+          loopback_ip_range: 10.255.10.0/27
+        svis:
+          - id: 11
+            name: VRF10_VLAN11
+            tags: [RACK_LEAF1]
+            enabled: true
+            ip_address_virtual: 10.10.11.1/24
+          - id: 12
+            tags: [RACK_LEAF2]
+            name: VRF10_VLAN12
+            enabled: true
+            ip_address_virtual: 10.10.12.1/24
+      - name: VRF20
+        vrf_id: 20
+        vrf_vni: 30020
+        vtep_diagnostic:
+          loopback: 20
+          loopback_ip_range: 10.255.20.0/27
+        svis:
+          - id: 21
+            name: VRF20_VLAN21
+            tags: [RACK_LEAF1]
+            enabled: true
+            ip_address_virtual: 10.10.21.1/24
+          - id: 22
+            name: VRF20_VLAN22
+            tags: [RACK_LEAF2]
+            enabled: true
+            ip_address_virtual: 10.10.22.1/24
