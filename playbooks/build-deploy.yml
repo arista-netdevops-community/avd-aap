@@ -1,5 +1,5 @@
 ---
-- name: Manage Arista Fabric Configuration
+- name: Update Arista Fabric Configuration
   hosts: CACTUS
   connection: local
   gather_facts: false
@@ -18,6 +18,5 @@
     - name: Deploy Configurations and tags to CloudVision
       import_role:
         name: cv_deploy
-        vars:
-          cv_server: www.arista.io
-          
+      vars:
+        cv_server: www.arista.io
