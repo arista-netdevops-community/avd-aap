@@ -1,1 +1,0 @@
-pyavd[ansible-collection]==5.2.2

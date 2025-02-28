@@ -1,0 +1,66 @@
+---
+underlay_routing_protocol: ebgp
+overlay_routing_protocol: ebgp
+
+default_interfaces:
+  - types: [ spine ]
+    platforms: [ cEOSLab ]
+    downlink_interfaces: [ Ethernet1-4/1 ]
+  - types: [ l3leaf ]
+    platforms: [ cEOSLab ]
+    uplink_interfaces: [ Ethernet49-50/1 ]
+    mlag_interfaces: [ Ethernet55-56/1 ]
+
+spine:
+  defaults:
+    platform: cEOSLab
+    loopback_ipv4_pool: 10.255.0.0/27
+    bgp_as: 65100
+
+  nodes:
+    - name: dc1-spine1
+      id: 1
+      mgmt_ip: 172.20.1.1/16
+
+    - name: dc1-spine2
+      id: 2
+      mgmt_ip: 172.20.1.2/16
+
+l3leaf:
+  defaults:
+    platform: cEOSLab
+    loopback_ipv4_pool: 10.255.0.0/27
+    loopback_ipv4_offset: 2
+    vtep_loopback_ipv4_pool: 10.255.1.0/27
+    uplink_switches: ['dc1-spine1', 'dc1-spine2']
+    uplink_ipv4_pool: 10.255.255.0/26
+    mlag_peer_ipv4_pool: 10.255.1.64/27
+    mlag_peer_l3_ipv4_pool: 10.255.1.96/27
+    virtual_router_mac_address: 00:1c:73:00:00:99
+    spanning_tree_priority: 4096
+    spanning_tree_mode: mstp
+
+  node_groups:
+    - group: LEAF1
+      bgp_as: 65101
+      filter:
+        tags: [ LEAF1 ]
+      nodes:
+        - name: dc1-leaf1a
+          id: 1
+          mgmt_ip: 172.20.1.3/16
+        - name: dc1-leaf1b
+          id: 2
+          mgmt_ip: 172.20.1.4/16
+
+    - group: LEAF2
+      bgp_as: 65102
+      filter:
+        tags: [ LEAF2 ]
+      nodes:
+        - name: dc1-leaf2a
+          id: 3
+          mgmt_ip: 172.20.1.5/16
+        - name: dc1-leaf2b
+          id: 4
+          mgmt_ip: 172.20.1.6/16

@@ -1,0 +1,25 @@
+---
+port_profiles:
+  - profile: server
+    native_vlan: 4092
+    mode: trunk
+    spanning_tree_portfast: edge
+    port_channel:
+      mode: active
+
+servers:
+  - name: server1
+    adapters:
+      - endpoint_ports: [ eth1, eth2 ]
+        switch_ports: [ Ethernet1, Ethernet1 ]
+        switches: [ dc1-leaf1a, dc1-leaf1b ]
+        profile: server
+        vlans: 11,21
+
+  - name: server2
+    adapters:
+      - endpoint_ports: [ eth1, eth2 ]
+        switch_ports: [ Ethernet1, Ethernet1 ]
+        switches: [ dc1-leaf2a, dc1-leaf2b ]
+        profile: server
+        vlans: 12,22

@@ -1,4 +1,0 @@
----
-collections:
-  - name: arista.avd
-    version: 5.2.2

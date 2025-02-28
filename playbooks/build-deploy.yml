@@ -1,0 +1,76 @@
+---
+- name: Update Arista fabric configuration
+  hosts: all
+  connection: local
+  gather_facts: false
+  collections:
+    - arista.avd
+    - ansible.scm
+  vars:
+    artifacts_repository: https://github.com/arista-netdevops-community/avd-aap
+    artifacts_branch: main
+    artifacts_folder: artifacts
+    changes_name: "Configuration changes by Ansible Automation Platform"
+    changes_description: |
+      Triggered by commit: {{ artifacts_repository }}/commit/{{ awx_project_revision }}
+      Job: https://{{ awx_execution_node }}/execution/jobs/playbook/{{ awx_job_id }}
+
+  tasks:
+    - name: Retrieve latest artifacts
+      delegate_to: localhost
+      run_once: true
+      git_retrieve:
+        origin:
+          url: "{{ artifacts_repository }}"
+        branch:
+          name: "{{ artifacts_branch }}"
+          duplicate_detection: false
+      register: repository
+
+    - name: Generate AVD structured configurations
+      import_role:
+        name: eos_designs
+      vars:
+        root_dir: "{{ repository['path'] }}/{{ artifacts_folder }}"
+
+    - name: Generate EOS intended configuration and device documentation
+      delegate_to: localhost
+      register: eos_config
+      eos_cli_config_gen:
+        structured_config_filename: "{{ structured_dir }}/{{ inventory_hostname }}.{{ avd_structured_config_file_format }}"
+        config_filename: "{{ root_dir }}/{{ output_dir_name }}/configs/{{ inventory_hostname }}.cfg"
+        documentation_filename: "{{ root_dir }}/{{ documentation_dir_name }}/{{ inventory_hostname }}.md"
+      vars:
+        root_dir: "{{ repository['path'] }}/{{ artifacts_folder }}"
+
+
+    - name: Deploy configurations and tags to CloudVision
+      when: eos_config.changed
+      delegate_to: cloudvision
+      import_role:
+        name: cv_deploy
+      vars:
+        root_dir: "{{ repository['path'] }}/{{ artifacts_folder }}"
+        cv_register_detailed_results: true
+        cv_workspace_name: "{{ changes_name }}"
+        cv_workspace_description: "{{ changes_description }}"
+        cv_change_control_description: "{{ changes_description }}"
+
+    - name: Publish artifacts
+      when: eos_config.changed
+      run_once: true
+      delegate_to: localhost
+      git_publish:
+        commit:
+          message: |
+            {{ changes_name }}
+
+            {{ changes_description }}
+            {% if cv_deploy_results.change_control.id is not none %}
+            Change Control: https://{{ cv_server }}/cv/provisioning/change-control?ccId={{ cv_deploy_results.change_control.id }}
+            {% else %}
+            CloudVision designed configuration was already up to date. No Change Control created.
+            {% endif %}
+        token: "{{ github_pat }}"
+        path: "{{ repository['path'] }}"
+        include: ["{{ artifacts_folder }}"]

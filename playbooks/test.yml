@@ -1,0 +1,45 @@
+---
+- name: Test Arista fabric state
+  hosts: all
+  connection: local
+  gather_facts: false
+  collections:
+    - arista.avd
+    - ansible.scm
+  vars:
+    artifacts_repository: https://github.com/arista-netdevops-community/avd-aap
+    artifacts_branch: main
+    artifacts_folder: artifacts
+    changes_name: "ANTA tests report by Ansible Automation Platform"
+    changes_description: "Job: https://{{ awx_execution_node }}/execution/jobs/playbook/{{ awx_job_id }}"
+
+  tasks:
+    - name: Retrieve latest artifacts
+      delegate_to: localhost
+      run_once: true
+      git_retrieve:
+        origin:
+          url: "{{ artifacts_repository }}"
+        branch:
+          name: "{{ artifacts_branch }}"
+          duplicate_detection: false
+      register: repository
+
+    - name: Test network states
+      import_role:
+        name: eos_validate_state
+      vars:
+        root_dir: "{{ repository['path'] }}/{{ artifacts_folder }}"
+
+    - name: Publish artifacts
+      run_once: true
+      delegate_to: localhost
+      git_publish:
+        commit:
+          message: |
+            {{ changes_name }}
+
+            {{ changes_description }}
+        token: "{{ github_pat }}"
+        path: "{{ repository['path'] }}"
+        include: ["{{ artifacts_folder }}"]
