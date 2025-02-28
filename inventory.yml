@@ -1,0 +1,42 @@
+---
+all:
+  children:
+    CACTUS:
+      vars:
+        ansible_user: admin
+        ansible_become: true
+        ansible_become_method: enable
+        ansible_httpapi_use_ssl: true
+        ansible_httpapi_validate_certs: false
+        ansible_httpapi_use_proxy: false
+        ansible_connection: ansible.netcommon.httpapi
+        ansible_network_os: arista.eos.eos
+      children:
+        DATACENTER:
+          children:
+            SPINES:
+              vars:
+                type: spine
+              hosts:
+                mtache-spine1:
+                  serial_number: MTACHEDATACENTER001
+                mtache-spine2:
+                  serial_number: MTACHEDATACENTER002
+            L3_LEAVES:
+              vars:
+                type: l3leaf
+              hosts:
+                mtache-leaf1a:
+                  serial_number: MTACHEDATACENTER003
+                mtache-leaf1b:
+                  serial_number: MTACHEDATACENTER004
+                mtache-leaf2a:
+                  serial_number: MTACHEDATACENTER005
+                mtache-leaf2b:
+                  serial_number: MTACHEDATACENTER006
+    NETWORK_SERVICES:
+      children:
+        L3_LEAVES:
+    CONNECTED_ENDPOINTS:
+      children:
+        L3_LEAVES:
