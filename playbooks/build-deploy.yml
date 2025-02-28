@@ -18,3 +18,6 @@
     - name: Deploy Configurations and tags to CloudVision
       import_role:
         name: cv_deploy
+        vars:
+          cv_server: www.arista.io
+          
