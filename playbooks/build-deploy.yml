@@ -1,0 +1,20 @@
+---
+- name: Manage Arista Fabric Configuration
+  hosts: CACTUS
+  connection: local
+  gather_facts: false
+  collections:
+    - arista.avd
+  tasks:
+
+    - name: Generate AVD Structured Configurations
+      import_role:
+        name: eos_designs
+
+    - name: Generate Device Configurations and Documentation
+      import_role:
+        name: eos_cli_config_gen
+
+    - name: Deploy Configurations and tags to CloudVision
+      import_role:
+        name: cv_deploy
