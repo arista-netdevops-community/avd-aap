@@ -4,9 +4,9 @@ on:
   push:
     branches:
       - main
-    paths:
-      - 'groups_vars/**'
-      - 'playbooks/build-deploy.yml'
+    # paths:
+    #   - 'groups_vars/**'
+    #   - 'playbooks/build-deploy.yml'
 
 jobs:
   deployment:
