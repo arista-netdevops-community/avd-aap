@@ -4,12 +4,12 @@ on:
   push:
     branches:
       - main
-    # paths:
-    #   - 'groups_vars/**'
-    #   - 'playbooks/build-deploy.yml'
+    paths:
+      - 'group_vars/**'
+      - 'playbooks/build-deploy.yml'
 
 jobs:
-  deployment:
+  launch-job-template:
     runs-on: ubuntu-latest
     steps:
     - name: Launch Job Template

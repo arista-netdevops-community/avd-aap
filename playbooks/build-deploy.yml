@@ -19,5 +19,6 @@
       import_role:
         name: cv_deploy
       vars:
+        cv_workspace_name: "Arista Validated Designs using Ansible Automation Platform"
         cv_server: "{{ ansible_user }}"
         cv_token: "{{ ansible_password }}"
