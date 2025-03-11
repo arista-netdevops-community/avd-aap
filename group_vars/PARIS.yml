@@ -1,9 +1,6 @@
 ---
 fabric_name: PARIS
 
-underlay_multicast: True
-evpn_multicast: True
-
 underlay_routing_protocol: ebgp
 overlay_routing_protocol: ebgp
 

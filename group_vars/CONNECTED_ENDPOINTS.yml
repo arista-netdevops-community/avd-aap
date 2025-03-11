@@ -17,7 +17,7 @@ servers:
     adapters:
       - endpoint_ports: [ eth1, eth2 ]
         switch_ports: [ Ethernet1, Ethernet1 ]
-        switches: [ mtache-leaf1a, mtache-leaf1b ]
+        switches: [ dc1-leaf1a, dc1-leaf1b ]
         profile: server
         vlans: 11,21,100,101
 
@@ -25,15 +25,15 @@ servers:
     adapters:
       - endpoint_ports: [ eth1, eth2 ]
         switch_ports: [ Ethernet1, Ethernet1 ]
-        switches: [ mtache-leaf2a, mtache-leaf2b ]
+        switches: [ dc1-leaf2a, dc1-leaf2b ]
         profile: server
         vlans: 12,22,100,101
-  
+
   - name: server3
     adapters:
       - endpoint_ports: [ Ethernet1 ]
         switch_ports: [ Ethernet3 ]
-        switches: [ mtache-leaf2a ]
+        switches: [ dc1-leaf2a ]
         vlans: 100
         mode: trunk
 
@@ -41,9 +41,9 @@ servers:
     adapters:
       - endpoint_ports: [ eth1 ]
         switch_ports: [ Ethernet2 ]
-        switches: [ mtache-leaf1a ]
+        switches: [ dc1-leaf1a ]
         profile: ixia
       - endpoint_ports: [ eth2 ]
         switch_ports: [ Ethernet2 ]
-        switches: [ mtache-leaf2a ]
+        switches: [ dc1-leaf2a ]
         profile: ixia

@@ -6,12 +6,12 @@ spine:
     bgp_as: 65100
 
   nodes:
-    - name: mtache-spine1
+    - name: dc1-spine1
       id: 1
       mgmt_ip: 172.20.1.1/16
       ipv6_mgmt_ip: fd00:6265:b424:a8b8::1:1/64
 
-    - name: mtache-spine2
+    - name: dc1-spine2
       id: 2
       mgmt_ip: 172.20.1.2/16
       ipv6_mgmt_ip: fd00:6265:b424:a8b8::1:2/64
@@ -22,7 +22,7 @@ l3leaf:
     loopback_ipv4_pool: 10.255.0.0/27
     loopback_ipv4_offset: 2
     vtep_loopback_ipv4_pool: 10.255.1.0/27
-    uplink_switches: ['mtache-spine1', 'mtache-spine2']
+    uplink_switches: ['dc1-spine1', 'dc1-spine2']
     uplink_ipv4_pool: 10.255.255.0/26
     mlag_peer_ipv4_pool: 10.255.1.64/27
     mlag_peer_l3_ipv4_pool: 10.255.1.96/27
@@ -36,11 +36,11 @@ l3leaf:
       filter:
         tags: [RACK_LEAF1]
       nodes:
-        - name: mtache-leaf1a
+        - name: dc1-leaf1a
           id: 1
           mgmt_ip: 172.20.1.3/16
           ipv6_mgmt_ip: fd00:6265:b424:a8b8::1:3/64
-        - name: mtache-leaf1b
+        - name: dc1-leaf1b
           id: 2
           mgmt_ip: 172.20.1.4/16
           ipv6_mgmt_ip: fd00:6265:b424:a8b8::1:4/64
@@ -50,11 +50,11 @@ l3leaf:
       filter:
         tags: [RACK_LEAF2]
       nodes:
-        - name: mtache-leaf2a
+        - name: dc1-leaf2a
           id: 3
           mgmt_ip: 172.20.1.5/16
           ipv6_mgmt_ip: fd00:6265:b424:a8b8::1:5/64
-        - name: mtache-leaf2b
+        - name: dc1-leaf2b
           id: 4
           mgmt_ip: 172.20.1.6/16
           ipv6_mgmt_ip: fd00:6265:b424:a8b8::1:6/64
