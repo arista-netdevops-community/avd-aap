@@ -48,7 +48,7 @@ custom_structured_configuration_management_interfaces:
     vrf: MGMT
     lldp:
       transmit: False
-      receive: False
+      receive: True
 
 ##############
 # Management #
