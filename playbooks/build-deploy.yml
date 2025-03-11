@@ -15,13 +15,9 @@
       import_role:
         name: eos_cli_config_gen
 
-    - name: Print the gateway for each host when defined
-      ansible.builtin.debug:
-        msg: Token is {{ ansible_password }}
-
     - name: Deploy Configurations and tags to CloudVision
       import_role:
         name: cv_deploy
       vars:
         cv_server: www.arista.io
-        cv_token: '{{ ansible_password }}'
+        cv_token: {{ ansible_password }}
