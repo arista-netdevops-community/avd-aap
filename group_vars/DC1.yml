@@ -31,10 +31,8 @@ l3leaf:
     spanning_tree_mode: mstp
 
   node_groups:
-    - group: L3_LEAF1
+    - group: LEAF1
       bgp_as: 65101
-      filter:
-        tags: [RACK_LEAF1]
       nodes:
         - name: dc1-leaf1a
           id: 1
@@ -45,10 +43,8 @@ l3leaf:
           mgmt_ip: 172.20.1.4/16
           ipv6_mgmt_ip: fd00:6265:b424:a8b8::1:4/64
 
-    - group: L3_LEAF2
+    - group: LEAF2
       bgp_as: 65102
-      filter:
-        tags: [RACK_LEAF2]
       nodes:
         - name: dc1-leaf2a
           id: 3

@@ -3,7 +3,7 @@ tenants:
   - name: TENANT1
     mac_vrf_vni_base: 10000
     vrfs:
-      - name: VRF10
+      - name: Production
         vrf_id: 10
         vrf_vni: 30010
         vtep_diagnostic:
@@ -11,16 +11,16 @@ tenants:
           loopback_ip_range: 10.255.10.0/27
         svis:
           - id: 11
-            name: VRF10_VLAN11
-            tags: [RACK_LEAF1]
+            name: Web
+            tags: [LEAF1]
             enabled: true
             ip_address_virtual: 10.10.11.1/24
           - id: 12
-            tags: [RACK_LEAF2]
-            name: VRF10_VLAN12
+            tags: [LEAF2]
+            name: Database
             enabled: true
             ip_address_virtual: 10.10.12.1/24
-      - name: VRF20
+      - name: Development
         vrf_id: 20
         vrf_vni: 30020
         vtep_diagnostic:
@@ -28,12 +28,12 @@ tenants:
           loopback_ip_range: 10.255.20.0/27
         svis:
           - id: 21
-            name: VRF20_VLAN21
-            tags: [RACK_LEAF1]
+            name: Web
+            tags: [LEAF1]
             enabled: true
             ip_address_virtual: 10.10.21.1/24
           - id: 22
-            name: VRF20_VLAN22
-            tags: [RACK_LEAF2]
+            name: Database
+            tags: [LEAF2]
             enabled: true
             ip_address_virtual: 10.10.22.1/24
