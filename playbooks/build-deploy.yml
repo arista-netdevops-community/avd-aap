@@ -20,4 +20,4 @@
         name: cv_deploy
       vars:
         cv_server: www.arista.io
-        cv_token: {{ ansible_password }}
+        cv_token: "{{ ansible_password }}"
