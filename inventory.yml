@@ -2,6 +2,14 @@
 all:
   children:
     PARIS:
+      vars:
+        ansible_become: true
+        ansible_become_method: enable
+        ansible_httpapi_use_ssl: true
+        ansible_httpapi_validate_certs: false
+        ansible_httpapi_use_proxy: false
+        ansible_connection: ansible.netcommon.httpapi
+        ansible_network_os: arista.eos.eos
       children:
         DC1:
           children:
