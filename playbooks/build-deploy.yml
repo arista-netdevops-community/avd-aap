@@ -1,5 +1,6 @@
 ---
 - name: Update Arista Fabric Configuration
+  hosts: all
   connection: local
   gather_facts: false
   collections:
