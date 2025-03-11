@@ -1,5 +1,5 @@
 ---
-fabric_name: CACTUS
+fabric_name: PARIS
 
 underlay_multicast: True
 evpn_multicast: True
