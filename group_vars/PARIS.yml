@@ -61,7 +61,7 @@ custom_structured_configuration_management_interfaces:
       receive: False
 
 custom_structured_configuration_daemon_terminattr:
-  cvaddrs: [apiserver.arista.io:443]
+  cvaddrs: ['apiserver.arista.io:443']
   cvvrf: MGMT
   smashexcludes: ale,flexCounter,hardware,kni,pulse,strata
   cvauth:
