@@ -20,3 +20,4 @@ jobs:
         username: ${{ secrets.AAP_USER }}
         password: ${{ secrets.AAP_PASSWORD }}
         customHeaders: '{"Content-Type": "application/json"}'
+        ignoreSsl: true
