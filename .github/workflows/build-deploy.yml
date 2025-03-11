@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - groups_vars
+      - groups_vars/**
       - playbooks/build-deploy.yml
 
 jobs:
