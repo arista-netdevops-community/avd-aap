@@ -1,0 +1,22 @@
+name: Build and Deploy EOS Configuration using Ansible Automation Platform
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - groups_vars
+      - playbooks/build-deploy.yml
+
+jobs:
+  deployment:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Launch Job Template
+      uses: fjogeleit/http-request-action@v1
+      with:
+        url: 'https://aap-rippley.demoredhat.com/api/controller/v2/job_templates/12/launch/'
+        method: 'POST'
+        username: ${{ secrets.AAP_USER }}
+        password: ${{ secrets.AAP_PASSWORD }}
+        customHeaders: '{"Content-Type": "application/json"}'
