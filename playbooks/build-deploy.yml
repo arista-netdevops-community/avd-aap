@@ -19,5 +19,5 @@
       import_role:
         name: cv_deploy
       vars:
-        cv_server: www.arista.io
+        cv_server: "{{ ansible_user }}"
         cv_token: "{{ ansible_password }}"
