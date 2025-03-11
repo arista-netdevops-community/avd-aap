@@ -1,7 +1,7 @@
 ---
 all:
   children:
-    CACTUS:
+    PARIS:
       vars:
         ansible_user: admin
         ansible_become: true
@@ -18,21 +18,21 @@ all:
               vars:
                 type: spine
               hosts:
-                mtache-spine1:
+                dc1-spine1:
                   serial_number: MTACHEDATACENTER001
-                mtache-spine2:
+                dc1-spine2:
                   serial_number: MTACHEDATACENTER002
             L3_LEAVES:
               vars:
                 type: l3leaf
               hosts:
-                mtache-leaf1a:
+                dc1-leaf1a:
                   serial_number: MTACHEDATACENTER003
-                mtache-leaf1b:
+                dc1-leaf1b:
                   serial_number: MTACHEDATACENTER004
-                mtache-leaf2a:
+                dc1-leaf2a:
                   serial_number: MTACHEDATACENTER005
-                mtache-leaf2b:
+                dc1-leaf2b:
                   serial_number: MTACHEDATACENTER006
     NETWORK_SERVICES:
       children:

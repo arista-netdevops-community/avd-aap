@@ -1,6 +1,5 @@
 ---
 - name: Update Arista Fabric Configuration
-  hosts: CACTUS
   connection: local
   gather_facts: false
   collections:
@@ -20,3 +19,4 @@
         name: cv_deploy
       vars:
         cv_server: www.arista.io
+        cv_token: '{{ ansible_password }}'
