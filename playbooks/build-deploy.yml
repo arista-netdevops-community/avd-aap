@@ -19,7 +19,7 @@
           url: "{{ artifacts_repository }}"
       register: repository
 
-    - name: Set AVD working directory
+    - name: Set job facts
       set_fact:
         root_dir: "{{ repository['path'] }}/{{ artifacts_folder }}"
         changes_name: "Configuration changes by Ansible Automation Platform"
