@@ -1,21 +1,40 @@
 ---
-- name: Update Arista Fabric Configuration
+- name: Update Arista fabric configuration
   hosts: all
   connection: local
   gather_facts: false
   collections:
     - arista.avd
-  tasks:
+    - ansible.scm
+  vars:
+    artifacts_folder: "artifacts"
 
-    - name: Generate AVD Structured Configurations
+  tasks:
+    - name: Generate AVD structured configurations
       import_role:
         name: eos_designs
+      vars:
+        root_dir: "{{ artifacts_folder }}"
 
-    - name: Generate Device Configurations and Documentation
-      import_role:
-        name: eos_cli_config_gen
+    - name: Generate EOS intended configuration and device documentation
+      delegate_to: localhost
+      register: eos_config
+      eos_cli_config_gen:
+        structured_config_filename: "{{ structured_dir }}/{{ inventory_hostname }}.{{ avd_structured_config_file_format }}"
+        config_filename: "{{ artifacts_folder }}/{{ output_dir_name }}/configs/{{ inventory_hostname }}.cfg"
+        documentation_filename: "{{ artifacts_folder }}/{{ documentation_dir_name }}/{{ inventory_hostname }}.md"
 
-    - name: Deploy Configurations and tags to CloudVision
+    - name: Publish artifacts
+      when: eos_config.changed
+      run_once: true
+      delegate_to: localhost
+      git_publish:
+        remove: false
+        include: ["{{ artifacts_folder }}"]
+        path: .
+
+    - name: Deploy configurations and tags to CloudVision
+      when: eos_config.changed
       import_role:
         name: cv_deploy
       vars:
