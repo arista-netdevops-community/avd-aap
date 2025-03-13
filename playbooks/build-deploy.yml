@@ -46,6 +46,12 @@
         path: "{{ repository['path'] }}"
         include: ["{{ artifacts_folder }}"]
 
+    - name: Debug
+      run_once: true
+      delegate_to: localhost
+      debug:
+        var: vars
+
     - name: Deploy configurations and tags to CloudVision
       when: eos_config.changed
       delegate_to: cloudvision
@@ -53,5 +59,3 @@
         name: cv_deploy
       vars:
         cv_workspace_name: "Configuration changes by Ansible Automation Platform user '{{ awx_user_name }}'"
-        cv_server: "{{ cv_server }}"
-        cv_token: "{{ cv_token }}"
