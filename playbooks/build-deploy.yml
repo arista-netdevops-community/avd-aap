@@ -10,6 +10,17 @@
     artifacts_folder: "artifacts"
 
   tasks:
+    - name: Debug
+      run_once: true
+      delegate_to: localhost
+      debug:
+        var: local_facts
+
+    - name: Setuo
+      run_once: true
+      delegate_to: localhost
+      setup:
+
     - name: Generate AVD structured configurations
       import_role:
         name: eos_designs
@@ -31,7 +42,7 @@
       git_publish:
         remove: false
         include: ["{{ artifacts_folder }}"]
-        path: .
+        path: "{{ artifacts_folder }}"
 
     - name: Deploy configurations and tags to CloudVision
       when: eos_config.changed
