@@ -14,12 +14,7 @@
       run_once: true
       delegate_to: localhost
       debug:
-        var: local_facts
-
-    - name: Setuo
-      run_once: true
-      delegate_to: localhost
-      setup:
+        var: vars
 
     - name: Generate AVD structured configurations
       import_role:
@@ -42,7 +37,7 @@
       git_publish:
         remove: false
         include: ["{{ artifacts_folder }}"]
-        path: "{{ artifacts_folder }}"
+        path: "{{ inventory_dir }}"
 
     - name: Deploy configurations and tags to CloudVision
       when: eos_config.changed
