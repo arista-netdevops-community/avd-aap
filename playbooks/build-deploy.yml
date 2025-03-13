@@ -30,6 +30,19 @@
         config_filename: "{{ artifacts_folder }}/{{ output_dir_name }}/configs/{{ inventory_hostname }}.cfg"
         documentation_filename: "{{ artifacts_folder }}/{{ documentation_dir_name }}/{{ inventory_hostname }}.md"
 
+    - name: Debug
+      register: files
+      find:
+        recurse: true
+        paths:
+          - "{{ playbook_dir }}/.."
+
+    - name: Debug
+      run_once: true
+      delegate_to: localhost
+      debug:
+        var: files
+
     - name: Publish artifacts
       when: eos_config.changed
       run_once: true
@@ -37,13 +50,13 @@
       git_publish:
         remove: false
         include: ["{{ artifacts_folder }}"]
-        path: "{{ inventory_dir }}"
+        path: "{{ playbook_dir }}/.."
 
     - name: Deploy configurations and tags to CloudVision
       when: eos_config.changed
       import_role:
         name: cv_deploy
       vars:
-        cv_workspace_name: "Arista Validated Designs using Ansible Automation Platform"
+        cv_workspace_name: "Configuration changes by Ansible Automation Platform user '{{ awx_user_name }}'"
         cv_server: "{{ ansible_user }}"
         cv_token: "{{ ansible_password }}"
