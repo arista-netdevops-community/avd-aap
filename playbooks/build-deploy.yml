@@ -19,25 +19,21 @@
           url: "{{ artifacts_repository }}"
       register: repository
 
+    - name: Set AVD working directory
+      set_fact:
+        root_dir: "{{ repository['path'] }}/{{ artifacts_folder }}"
+
     - name: Generate AVD structured configurations
       import_role:
         name: eos_designs
-      vars:
-        root_dir: "{{ repository['path'] }}/{{ artifacts_folder }}"
 
     - name: Generate EOS intended configuration and device documentation
       delegate_to: localhost
       register: eos_config
       eos_cli_config_gen:
         structured_config_filename: "{{ structured_dir }}/{{ inventory_hostname }}.{{ avd_structured_config_file_format }}"
-        config_filename: "{{ repository['path'] }}/{{ artifacts_folder }}/{{ output_dir_name }}/configs/{{ inventory_hostname }}.cfg"
-        documentation_filename: "{{ repository['path'] }}/{{ artifacts_folder }}/{{ documentation_dir_name }}/{{ inventory_hostname }}.md"
-
-    - name: Debug
-      run_once: true
-      delegate_to: localhost
-      debug:
-        var: vars
+        config_filename: "{{ root_dir }}/{{ output_dir_name }}/configs/{{ inventory_hostname }}.cfg"
+        documentation_filename: "{{ root_dir }}/{{ documentation_dir_name }}/{{ inventory_hostname }}.md"
 
     - name: Publish artifacts
       when: eos_config.changed
@@ -52,9 +48,8 @@
 
     - name: Deploy configurations and tags to CloudVision
       when: eos_config.changed
+      delegate_to: cloudvision
       import_role:
         name: cv_deploy
       vars:
         cv_workspace_name: "Configuration changes by Ansible Automation Platform user '{{ awx_user_name }}'"
-        cv_server: "{{ ansible_user }}"
-        cv_token: "{{ ansible_password }}"
