@@ -56,7 +56,10 @@
       delegate_to: localhost
       git_publish:
         commit:
-          message: "Configuration changes by Ansible Automation Platform user '{{ awx_user_name }}'"
+          message: |
+            Configuration changes by Ansible Automation Platform user '{{ awx_user_name }}'
+
+            https://{{ cv_server }}/cv/provisioning/change-control?ccId=Workspace-ws-cdc031a2-72a4-410f-a8b9-bf0c189776d1 {{ cv_deploy_results.change_control.id }}
         token: "{{ github_pat }}"
         path: "{{ repository['path'] }}"
         include: ["{{ artifacts_folder }}"]
