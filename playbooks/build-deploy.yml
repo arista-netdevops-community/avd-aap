@@ -22,6 +22,7 @@
     - name: Set AVD working directory
       set_fact:
         root_dir: "{{ repository['path'] }}/{{ artifacts_folder }}"
+        changes_name: "Configuration changes by Ansible Automation Platform"
         changes_description: |
           Triggered by commit: {{ artifacts_repository }}/commit/{{ awx_project_revision }}"
           Job: https://{{ awx_execution_node }}/execution/jobs/playbook/{{ awx_job_id }}
@@ -45,7 +46,8 @@
       import_role:
         name: cv_deploy
       vars:
-        cv_workspace_name: "Configuration changes by Ansible Automation Platform"
+        cv_register_detailed_results: true
+        cv_workspace_name: "{{ changes_name }}"
         cv_workspace_description: "{{ changes_description }}"
         cv_change_control_description: "{{ changes_description }}"
 
@@ -62,7 +64,7 @@
       git_publish:
         commit:
           message: |
-            Configuration changes by Ansible Automation Platform
+            {{ changes_name }}
 
             {{ changes_description }}
             Change Control: https://{{ cv_server }}/cv/provisioning/change-control?ccId={{ cv_deploy_results.change_control.id }}
