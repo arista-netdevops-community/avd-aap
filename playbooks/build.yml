@@ -20,10 +20,6 @@
       debug:
         var: ansible_facts
 
-    - name: Print environment variables
-      run: |
-        env
-
     - name: Push artifacts
       git_acp:
         add: ["."]
