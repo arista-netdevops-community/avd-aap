@@ -2,3 +2,5 @@
 collections:
   - name: arista.avd
     version: 5.2.2
+  - name: lvrfrc87.git_acp
+    version: 2.1.0

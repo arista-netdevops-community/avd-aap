@@ -1,0 +1,33 @@
+---
+- name: Update Arista Fabric Configuration
+  hosts: all
+  connection: local
+  gather_facts: false
+  collections:
+    - arista.avd
+    - lvrfrc87.git_acp
+  tasks:
+
+    - name: Generate AVD Structured Configurations
+      import_role:
+        name: eos_designs
+
+    - name: Generate Device Configurations and Documentation
+      import_role:
+        name: eos_cli_config_gen
+
+    - name: Print all available facts
+      debug:
+        var: ansible_facts
+
+    - name: Print environment variables
+      run: |
+        env
+
+    - name: Push artifacts
+      git_acp:
+        add: ["."]
+        url: git@github.com:arista-netdevops-community/avd-aap.git
+        comment: "Ansible Automation Platfiorm Test"
+        branch: "main"
+        path: "{{ working_dir }}"
