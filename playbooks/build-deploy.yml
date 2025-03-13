@@ -33,6 +33,7 @@
     - name: Debug
       register: files
       find:
+        hidden: true
         recurse: true
         paths:
           - "{{ playbook_dir }}/.."
