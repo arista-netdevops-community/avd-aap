@@ -53,3 +53,5 @@
         name: cv_deploy
       vars:
         cv_workspace_name: "Configuration changes by Ansible Automation Platform user '{{ awx_user_name }}'"
+        cv_server: "{{ cv_server }}"
+        cv_token: "{{ cv_token }}"
