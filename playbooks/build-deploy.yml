@@ -46,6 +46,7 @@
       git_publish:
         commit:
           message: "Configuration changes by Ansible Automation Platform user '{{ awx_user_name }}'"
+        token: "{{ github_pat }}"
         path: "{{ repository['path'] }}"
         include: ["{{ artifacts_folder }}"]
 
