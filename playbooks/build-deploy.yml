@@ -7,51 +7,47 @@
     - arista.avd
     - ansible.scm
   vars:
-    artifacts_folder: "artifacts"
+    artifacts_repository: https://github.com/arista-netdevops-community/avd-aap.git
+    artifacts_folder: artifacts
 
   tasks:
-    - name: Debug
-      run_once: true
+    - name: Retrieve latest artifacts
       delegate_to: localhost
-      debug:
-        var: vars
+      run_once: true
+      git_retrieve:
+        origin:
+          url: "{{ artifacts_repository }}"
+      register: repository
 
     - name: Generate AVD structured configurations
       import_role:
         name: eos_designs
       vars:
-        root_dir: "{{ artifacts_folder }}"
+        root_dir: "{{ repository['path'] }}/{{ artifacts_folder }}"
 
     - name: Generate EOS intended configuration and device documentation
       delegate_to: localhost
       register: eos_config
       eos_cli_config_gen:
         structured_config_filename: "{{ structured_dir }}/{{ inventory_hostname }}.{{ avd_structured_config_file_format }}"
-        config_filename: "{{ artifacts_folder }}/{{ output_dir_name }}/configs/{{ inventory_hostname }}.cfg"
-        documentation_filename: "{{ artifacts_folder }}/{{ documentation_dir_name }}/{{ inventory_hostname }}.md"
-
-    - name: Debug
-      register: files
-      find:
-        hidden: true
-        recurse: true
-        paths:
-          - "{{ playbook_dir }}/.."
+        config_filename: "{{ repository['path'] }}/{{ artifacts_folder }}/{{ output_dir_name }}/configs/{{ inventory_hostname }}.cfg"
+        documentation_filename: "{{ repository['path'] }}/{{ artifacts_folder }}/{{ documentation_dir_name }}/{{ inventory_hostname }}.md"
 
     - name: Debug
       run_once: true
       delegate_to: localhost
       debug:
-        var: files
+        var: vars
 
     - name: Publish artifacts
       when: eos_config.changed
       run_once: true
       delegate_to: localhost
       git_publish:
-        remove: false
+        commit:
+          message: "Configuration changes by Ansible Automation Platform user '{{ awx_user_name }}'"
+        path: "{{ repository['path'] }}"
         include: ["{{ artifacts_folder }}"]
-        path: "{{ playbook_dir }}/.."
 
     - name: Deploy configurations and tags to CloudVision
       when: eos_config.changed
