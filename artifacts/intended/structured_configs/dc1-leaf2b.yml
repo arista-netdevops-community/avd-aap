@@ -97,6 +97,11 @@ loopback_interfaces:
   description: VXLAN_TUNNEL_SOURCE
   shutdown: false
   ip_address: 10.255.1.5/32
+- name: Loopback20
+  description: DIAG_VRF_Development
+  shutdown: false
+  vrf: Development
+  ip_address: 10.255.20.6/32
 - name: Loopback10
   description: DIAG_VRF_Production
   shutdown: false
@@ -260,6 +265,22 @@ router_bgp:
       enabled: true
       route_map: RM-CONN-2-BGP
   vlans:
+  - id: 21
+    tenant: TENANT1
+    rd: 10.255.0.6:10021
+    route_targets:
+      both:
+      - 10021:10021
+    redistribute_routes:
+    - learned
+  - id: 22
+    tenant: TENANT1
+    rd: 10.255.0.6:10022
+    route_targets:
+      both:
+      - 10022:10022
+    redistribute_routes:
+    - learned
   - id: 11
     tenant: TENANT1
     rd: 10.255.0.6:10011
@@ -289,6 +310,26 @@ router_bgp:
     - name: EVPN-OVERLAY-PEERS
       activate: false
   vrfs:
+  - name: Development
+    rd: 10.255.0.6:20
+    route_targets:
+      import:
+      - address_family: evpn
+        route_targets:
+        - '20:20'
+      export:
+      - address_family: evpn
+        route_targets:
+        - '20:20'
+    router_id: 10.255.0.6
+    neighbors:
+    - ip_address: 10.255.1.100
+      peer_group: MLAG-IPv4-UNDERLAY-PEER
+      description: dc1-leaf2a_Vlan3019
+    redistribute:
+      connected:
+        enabled: true
+        route_map: RM-CONN-2-BGP-VRFS
   - name: Production
     rd: 10.255.0.6:10
     route_targets:
@@ -322,6 +363,8 @@ static_routes:
   gateway: 172.20.0.1
 transceiver_qsfp_default_mode_4x10: true
 virtual_source_nat_vrfs:
+- name: Development
+  ip_address: 10.255.20.6
 - name: Production
   ip_address: 10.255.10.6
 vlan_interfaces:
@@ -336,6 +379,30 @@ vlan_interfaces:
   ip_address: 10.255.1.69/31
   mtu: 1500
   no_autostate: true
+- name: Vlan21
+  description: Web
+  shutdown: false
+  vrf: Development
+  ip_address_virtual: 10.10.21.1/24
+  tenant: TENANT1
+  tags:
+  - LEAF1
+- name: Vlan22
+  description: Database
+  shutdown: false
+  vrf: Development
+  ip_address_virtual: 10.10.22.1/24
+  tenant: TENANT1
+  tags:
+  - LEAF2
+- name: Vlan3019
+  description: MLAG_L3_VRF_Development
+  shutdown: false
+  vrf: Development
+  ip_address: 10.255.1.101/31
+  mtu: 1500
+  tenant: TENANT1
+  type: underlay_peering
 - name: Vlan11
   description: Web
   shutdown: false
@@ -376,6 +443,17 @@ vlans:
   trunk_groups:
   - MLAG
   tenant: system
+- id: 21
+  name: Web
+  tenant: TENANT1
+- id: 22
+  name: Database
+  tenant: TENANT1
+- id: 3019
+  name: MLAG_L3_VRF_Development
+  trunk_groups:
+  - MLAG
+  tenant: TENANT1
 - id: 11
   name: Web
   tenant: TENANT1
@@ -391,6 +469,9 @@ vrfs:
 - name: MGMT
   ip_routing: false
   ipv6_routing: false
+- name: Development
+  ip_routing: true
+  tenant: TENANT1
 - name: Production
   ip_routing: true
   tenant: TENANT1
@@ -402,11 +483,17 @@ vxlan_interface:
       udp_port: 4789
       virtual_router_encapsulation_mac_address: mlag-system-id
       vlans:
+      - id: 21
+        vni: 10021
+      - id: 22
+        vni: 10022
       - id: 11
         vni: 10011
       - id: 12
         vni: 10012
       vrfs:
+      - name: Development
+        vni: 30020
       - name: Production
         vni: 30010
 serial_number: MTACHEDATACENTER006
