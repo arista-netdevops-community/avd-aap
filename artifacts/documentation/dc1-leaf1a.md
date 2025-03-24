@@ -296,10 +296,7 @@ vlan internal order ascending range 1006 1199
 | ------- | ---- | ------------ |
 | 11 | Web | - |
 | 12 | Database | - |
-| 21 | Web | - |
-| 22 | Database | - |
 | 3009 | MLAG_L3_VRF_Production | MLAG |
-| 3019 | MLAG_L3_VRF_Development | MLAG |
 | 4093 | MLAG_L3 | MLAG |
 | 4094 | MLAG | MLAG |
 
@@ -313,18 +310,8 @@ vlan 11
 vlan 12
    name Database
 !
-vlan 21
-   name Web
-!
-vlan 22
-   name Database
-!
 vlan 3009
    name MLAG_L3_VRF_Production
-   trunk group MLAG
-!
-vlan 3019
-   name MLAG_L3_VRF_Development
    trunk group MLAG
 !
 vlan 4093
@@ -460,7 +447,6 @@ interface Port-Channel551
 | Loopback0 | ROUTER_ID | default | 10.255.0.3/32 |
 | Loopback1 | VXLAN_TUNNEL_SOURCE | default | 10.255.1.3/32 |
 | Loopback10 | DIAG_VRF_Production | Production | 10.255.10.3/32 |
-| Loopback20 | DIAG_VRF_Development | Development | 10.255.20.3/32 |
 
 ##### IPv6
 
@@ -469,7 +455,6 @@ interface Port-Channel551
 | Loopback0 | ROUTER_ID | default | - |
 | Loopback1 | VXLAN_TUNNEL_SOURCE | default | - |
 | Loopback10 | DIAG_VRF_Production | Production | - |
-| Loopback20 | DIAG_VRF_Development | Development | - |
 
 #### Loopback Interfaces Device Configuration
 
@@ -490,12 +475,6 @@ interface Loopback10
    no shutdown
    vrf Production
    ip address 10.255.10.3/32
-!
-interface Loopback20
-   description DIAG_VRF_Development
-   no shutdown
-   vrf Development
-   ip address 10.255.20.3/32
 ```
 
 ### VLAN Interfaces
@@ -506,10 +485,7 @@ interface Loopback20
 | --------- | ----------- | --- | ---- | -------- |
 | Vlan11 | Web | Production | - | False |
 | Vlan12 | Database | Production | - | False |
-| Vlan21 | Web | Development | - | False |
-| Vlan22 | Database | Development | - | False |
 | Vlan3009 | MLAG_L3_VRF_Production | Production | 1500 | False |
-| Vlan3019 | MLAG_L3_VRF_Development | Development | 1500 | False |
 | Vlan4093 | MLAG_L3 | default | 1500 | False |
 | Vlan4094 | MLAG | default | 1500 | False |
 
@@ -519,10 +495,7 @@ interface Loopback20
 | --------- | --- | ---------- | ------------------ | ------------------------- | ------ | ------- |
 | Vlan11 |  Production  |  -  |  10.10.11.1/24  |  -  |  -  |  -  |
 | Vlan12 |  Production  |  -  |  10.10.12.1/24  |  -  |  -  |  -  |
-| Vlan21 |  Development  |  -  |  10.10.21.1/24  |  -  |  -  |  -  |
-| Vlan22 |  Development  |  -  |  10.10.22.1/24  |  -  |  -  |  -  |
 | Vlan3009 |  Production  |  10.255.1.96/31  |  -  |  -  |  -  |  -  |
-| Vlan3019 |  Development  |  10.255.1.96/31  |  -  |  -  |  -  |  -  |
 | Vlan4093 |  default  |  10.255.1.96/31  |  -  |  -  |  -  |  -  |
 | Vlan4094 |  default  |  10.255.1.64/31  |  -  |  -  |  -  |  -  |
 
@@ -542,30 +515,11 @@ interface Vlan12
    vrf Production
    ip address virtual 10.10.12.1/24
 !
-interface Vlan21
-   description Web
-   no shutdown
-   vrf Development
-   ip address virtual 10.10.21.1/24
-!
-interface Vlan22
-   description Database
-   no shutdown
-   vrf Development
-   ip address virtual 10.10.22.1/24
-!
 interface Vlan3009
    description MLAG_L3_VRF_Production
    no shutdown
    mtu 1500
    vrf Production
-   ip address 10.255.1.96/31
-!
-interface Vlan3019
-   description MLAG_L3_VRF_Development
-   no shutdown
-   mtu 1500
-   vrf Development
    ip address 10.255.1.96/31
 !
 interface Vlan4093
@@ -598,14 +552,11 @@ interface Vlan4094
 | ---- | --- | ---------- | --------------- |
 | 11 | 10011 | - | - |
 | 12 | 10012 | - | - |
-| 21 | 10021 | - | - |
-| 22 | 10022 | - | - |
 
 ##### VRF to VNI and Multicast Group Mappings
 
 | VRF | VNI | Multicast Group |
 | ---- | --- | --------------- |
-| Development | 30020 | - |
 | Production | 30010 | - |
 
 #### VXLAN Interface Device Configuration
@@ -619,9 +570,6 @@ interface Vxlan1
    vxlan udp-port 4789
    vxlan vlan 11 vni 10011
    vxlan vlan 12 vni 10012
-   vxlan vlan 21 vni 10021
-   vxlan vlan 22 vni 10022
-   vxlan vrf Development vni 30020
    vxlan vrf Production vni 30010
 ```
 
@@ -656,7 +604,6 @@ ip virtual-router mac-address 00:1c:73:00:00:99
 | VRF | Routing Enabled |
 | --- | --------------- |
 | default | True |
-| Development | True |
 | MGMT | False |
 | Production | True |
 
@@ -665,7 +612,6 @@ ip virtual-router mac-address 00:1c:73:00:00:99
 ```eos
 !
 ip routing
-ip routing vrf Development
 no ip routing vrf MGMT
 ip routing vrf Production
 ```
@@ -677,7 +623,6 @@ ip routing vrf Production
 | VRF | Routing Enabled |
 | --- | --------------- |
 | default | False |
-| Development | false |
 | MGMT | false |
 | Production | false |
 
@@ -766,7 +711,6 @@ ASN Notation: asplain
 | 10.255.1.97 | Inherited from peer group MLAG-IPv4-UNDERLAY-PEER | default | - | Inherited from peer group MLAG-IPv4-UNDERLAY-PEER | Inherited from peer group MLAG-IPv4-UNDERLAY-PEER | - | - | - | - | - | - |
 | 10.255.255.0 | 65100 | default | - | Inherited from peer group IPv4-UNDERLAY-PEERS | Inherited from peer group IPv4-UNDERLAY-PEERS | - | - | - | - | - | - |
 | 10.255.255.2 | 65100 | default | - | Inherited from peer group IPv4-UNDERLAY-PEERS | Inherited from peer group IPv4-UNDERLAY-PEERS | - | - | - | - | - | - |
-| 10.255.1.97 | Inherited from peer group MLAG-IPv4-UNDERLAY-PEER | Development | - | Inherited from peer group MLAG-IPv4-UNDERLAY-PEER | Inherited from peer group MLAG-IPv4-UNDERLAY-PEER | - | - | - | - | - | - |
 | 10.255.1.97 | Inherited from peer group MLAG-IPv4-UNDERLAY-PEER | Production | - | Inherited from peer group MLAG-IPv4-UNDERLAY-PEER | Inherited from peer group MLAG-IPv4-UNDERLAY-PEER | - | - | - | - | - | - |
 
 #### Router BGP EVPN Address Family
@@ -783,14 +727,11 @@ ASN Notation: asplain
 | ---- | ------------------- | ----------------- | ------------------- | ------------------- | ------------ |
 | 11 | 10.255.0.3:10011 | 10011:10011 | - | - | learned |
 | 12 | 10.255.0.3:10012 | 10012:10012 | - | - | learned |
-| 21 | 10.255.0.3:10021 | 10021:10021 | - | - | learned |
-| 22 | 10.255.0.3:10022 | 10022:10022 | - | - | learned |
 
 #### Router BGP VRFs
 
 | VRF | Route-Distinguisher | Redistribute |
 | --- | ------------------- | ------------ |
-| Development | 10.255.0.3:20 | connected |
 | Production | 10.255.0.3:10 | connected |
 
 #### Router BGP Device Configuration
@@ -846,16 +787,6 @@ router bgp 65101
       route-target both 10012:10012
       redistribute learned
    !
-   vlan 21
-      rd 10.255.0.3:10021
-      route-target both 10021:10021
-      redistribute learned
-   !
-   vlan 22
-      rd 10.255.0.3:10022
-      route-target both 10022:10022
-      redistribute learned
-   !
    address-family evpn
       neighbor EVPN-OVERLAY-PEERS activate
    !
@@ -863,15 +794,6 @@ router bgp 65101
       no neighbor EVPN-OVERLAY-PEERS activate
       neighbor IPv4-UNDERLAY-PEERS activate
       neighbor MLAG-IPv4-UNDERLAY-PEER activate
-   !
-   vrf Development
-      rd 10.255.0.3:20
-      route-target import evpn 20:20
-      route-target export evpn 20:20
-      router-id 10.255.0.3
-      neighbor 10.255.1.97 peer group MLAG-IPv4-UNDERLAY-PEER
-      neighbor 10.255.1.97 description dc1-leaf1b_Vlan3019
-      redistribute connected route-map RM-CONN-2-BGP-VRFS
    !
    vrf Production
       rd 10.255.0.3:10
@@ -993,15 +915,12 @@ route-map RM-MLAG-PEER-IN permit 10
 
 | VRF Name | IP Routing |
 | -------- | ---------- |
-| Development | enabled |
 | MGMT | disabled |
 | Production | enabled |
 
 ### VRF Instances Device Configuration
 
 ```eos
-!
-vrf instance Development
 !
 vrf instance MGMT
 !
@@ -1014,13 +933,11 @@ vrf instance Production
 
 | Source NAT VRF | Source NAT IPv4 Address | Source NAT IPv6 Address |
 | -------------- | ----------------------- | ----------------------- |
-| Development | 10.255.20.3 | - |
 | Production | 10.255.10.3 | - |
 
 ### Virtual Source NAT Configuration
 
 ```eos
 !
-ip address virtual source-nat vrf Development address 10.255.20.3
 ip address virtual source-nat vrf Production address 10.255.10.3
 ```
