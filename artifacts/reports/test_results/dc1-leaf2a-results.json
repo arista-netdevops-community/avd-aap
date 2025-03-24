@@ -328,16 +328,6 @@
     ],
     "description": "Verifies the operational states of specified interfaces to ensure they match expected configurations.",
     "result": "success",
-    "custom_field": "Interface Loopback20 - DIAG_VRF_Development = 'up'"
-  },
-  {
-    "name": "dc1-leaf2a",
-    "test": "VerifyInterfacesStatus",
-    "categories": [
-      "interfaces"
-    ],
-    "description": "Verifies the operational states of specified interfaces to ensure they match expected configurations.",
-    "result": "success",
     "custom_field": "Interface Port-Channel1 - SERVER_server2 = 'up'"
   },
   {
@@ -378,37 +368,7 @@
     ],
     "description": "Verifies the operational states of specified interfaces to ensure they match expected configurations.",
     "result": "success",
-    "custom_field": "Interface Vlan21 - Web = 'up'"
-  },
-  {
-    "name": "dc1-leaf2a",
-    "test": "VerifyInterfacesStatus",
-    "categories": [
-      "interfaces"
-    ],
-    "description": "Verifies the operational states of specified interfaces to ensure they match expected configurations.",
-    "result": "success",
-    "custom_field": "Interface Vlan22 - Database = 'up'"
-  },
-  {
-    "name": "dc1-leaf2a",
-    "test": "VerifyInterfacesStatus",
-    "categories": [
-      "interfaces"
-    ],
-    "description": "Verifies the operational states of specified interfaces to ensure they match expected configurations.",
-    "result": "success",
     "custom_field": "Interface Vlan3009 - MLAG_L3_VRF_Production = 'up'"
-  },
-  {
-    "name": "dc1-leaf2a",
-    "test": "VerifyInterfacesStatus",
-    "categories": [
-      "interfaces"
-    ],
-    "description": "Verifies the operational states of specified interfaces to ensure they match expected configurations.",
-    "result": "success",
-    "custom_field": "Interface Vlan3019 - MLAG_L3_VRF_Development = 'up'"
   },
   {
     "name": "dc1-leaf2a",
@@ -537,7 +497,7 @@
     ],
     "description": "Verifies that the provided routes are present in the routing table of a specified VRF.",
     "result": "success",
-    "custom_field": "Route: 10.255.1.5 - Peer: dc1-leaf2a"
+    "custom_field": "Route: 10.255.1.5 - Peer: dc1-leaf2b"
   },
   {
     "name": "dc1-leaf2a",
