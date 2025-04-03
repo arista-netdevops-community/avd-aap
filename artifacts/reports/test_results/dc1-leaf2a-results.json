@@ -338,7 +338,7 @@
     ],
     "description": "Verifies the operational states of specified interfaces to ensure they match expected configurations.",
     "result": "success",
-    "custom_field": "Interface Vlan11 - Web = 'up'"
+    "custom_field": "Interface Vlan12 - VLAN12 = 'up'"
   },
   {
     "name": "dc1-leaf2a",
@@ -348,27 +348,7 @@
     ],
     "description": "Verifies the operational states of specified interfaces to ensure they match expected configurations.",
     "result": "success",
-    "custom_field": "Interface Vlan12 - Database = 'up'"
-  },
-  {
-    "name": "dc1-leaf2a",
-    "test": "VerifyInterfacesStatus",
-    "categories": [
-      "interfaces"
-    ],
-    "description": "Verifies the operational states of specified interfaces to ensure they match expected configurations.",
-    "result": "success",
-    "custom_field": "Interface Vlan21 - Web = 'up'"
-  },
-  {
-    "name": "dc1-leaf2a",
-    "test": "VerifyInterfacesStatus",
-    "categories": [
-      "interfaces"
-    ],
-    "description": "Verifies the operational states of specified interfaces to ensure they match expected configurations.",
-    "result": "success",
-    "custom_field": "Interface Vlan22 - Database = 'up'"
+    "custom_field": "Interface Vlan22 - VLAN22 = 'up'"
   },
   {
     "name": "dc1-leaf2a",
