@@ -290,7 +290,9 @@ vlan internal order ascending range 1006 1199
 | VLAN ID | Name | Trunk Groups |
 | ------- | ---- | ------------ |
 | 11 | VLAN11 | - |
+| 21 | VLAN21 | - |
 | 3009 | MLAG_L3_VRF_BLUE | MLAG |
+| 3019 | MLAG_L3_VRF_GREEN | MLAG |
 | 4093 | MLAG_L3 | MLAG |
 | 4094 | MLAG | MLAG |
 
@@ -301,8 +303,15 @@ vlan internal order ascending range 1006 1199
 vlan 11
    name VLAN11
 !
+vlan 21
+   name VLAN21
+!
 vlan 3009
    name MLAG_L3_VRF_BLUE
+   trunk group MLAG
+!
+vlan 3019
+   name MLAG_L3_VRF_GREEN
    trunk group MLAG
 !
 vlan 4093
@@ -428,6 +437,7 @@ interface Port-Channel551
 | Loopback0 | ROUTER_ID | default | 10.255.0.4/32 |
 | Loopback1 | VXLAN_TUNNEL_SOURCE | default | 10.255.1.3/32 |
 | Loopback10 | DIAG_VRF_BLUE | BLUE | 10.255.10.4/32 |
+| Loopback20 | DIAG_VRF_GREEN | GREEN | 10.255.20.4/32 |
 
 ##### IPv6
 
@@ -436,6 +446,7 @@ interface Port-Channel551
 | Loopback0 | ROUTER_ID | default | - |
 | Loopback1 | VXLAN_TUNNEL_SOURCE | default | - |
 | Loopback10 | DIAG_VRF_BLUE | BLUE | - |
+| Loopback20 | DIAG_VRF_GREEN | GREEN | - |
 
 #### Loopback Interfaces Device Configuration
 
@@ -456,6 +467,12 @@ interface Loopback10
    no shutdown
    vrf BLUE
    ip address 10.255.10.4/32
+!
+interface Loopback20
+   description DIAG_VRF_GREEN
+   no shutdown
+   vrf GREEN
+   ip address 10.255.20.4/32
 ```
 
 ### VLAN Interfaces
@@ -465,7 +482,9 @@ interface Loopback10
 | Interface | Description | VRF |  MTU | Shutdown |
 | --------- | ----------- | --- | ---- | -------- |
 | Vlan11 | VLAN11 | BLUE | - | False |
+| Vlan21 | VLAN21 | GREEN | - | False |
 | Vlan3009 | MLAG_L3_VRF_BLUE | BLUE | 1500 | False |
+| Vlan3019 | MLAG_L3_VRF_GREEN | GREEN | 1500 | False |
 | Vlan4093 | MLAG_L3 | default | 1500 | False |
 | Vlan4094 | MLAG | default | 1500 | False |
 
@@ -474,7 +493,9 @@ interface Loopback10
 | Interface | VRF | IP Address | IP Address Virtual | IP Router Virtual Address | ACL In | ACL Out |
 | --------- | --- | ---------- | ------------------ | ------------------------- | ------ | ------- |
 | Vlan11 |  BLUE  |  -  |  10.10.11.1/24  |  -  |  -  |  -  |
+| Vlan21 |  GREEN  |  -  |  10.10.21.1/24  |  -  |  -  |  -  |
 | Vlan3009 |  BLUE  |  10.255.1.97/31  |  -  |  -  |  -  |  -  |
+| Vlan3019 |  GREEN  |  10.255.1.97/31  |  -  |  -  |  -  |  -  |
 | Vlan4093 |  default  |  10.255.1.97/31  |  -  |  -  |  -  |  -  |
 | Vlan4094 |  default  |  10.255.1.65/31  |  -  |  -  |  -  |  -  |
 
@@ -488,11 +509,24 @@ interface Vlan11
    vrf BLUE
    ip address virtual 10.10.11.1/24
 !
+interface Vlan21
+   description VLAN21
+   no shutdown
+   vrf GREEN
+   ip address virtual 10.10.21.1/24
+!
 interface Vlan3009
    description MLAG_L3_VRF_BLUE
    no shutdown
    mtu 1500
    vrf BLUE
+   ip address 10.255.1.97/31
+!
+interface Vlan3019
+   description MLAG_L3_VRF_GREEN
+   no shutdown
+   mtu 1500
+   vrf GREEN
    ip address 10.255.1.97/31
 !
 interface Vlan4093
@@ -524,12 +558,14 @@ interface Vlan4094
 | VLAN | VNI | Flood List | Multicast Group |
 | ---- | --- | ---------- | --------------- |
 | 11 | 10011 | - | - |
+| 21 | 10021 | - | - |
 
 ##### VRF to VNI and Multicast Group Mappings
 
 | VRF | VNI | Multicast Group |
 | ---- | --- | --------------- |
 | BLUE | 30010 | - |
+| GREEN | 30020 | - |
 
 #### VXLAN Interface Device Configuration
 
@@ -541,7 +577,9 @@ interface Vxlan1
    vxlan virtual-router encapsulation mac-address mlag-system-id
    vxlan udp-port 4789
    vxlan vlan 11 vni 10011
+   vxlan vlan 21 vni 10021
    vxlan vrf BLUE vni 30010
+   vxlan vrf GREEN vni 30020
 ```
 
 ## Routing
@@ -576,6 +614,7 @@ ip virtual-router mac-address 00:1c:73:00:00:99
 | --- | --------------- |
 | default | True |
 | BLUE | True |
+| GREEN | True |
 | MGMT | False |
 
 #### IP Routing Device Configuration
@@ -584,6 +623,7 @@ ip virtual-router mac-address 00:1c:73:00:00:99
 !
 ip routing
 ip routing vrf BLUE
+ip routing vrf GREEN
 no ip routing vrf MGMT
 ```
 
@@ -595,6 +635,7 @@ no ip routing vrf MGMT
 | --- | --------------- |
 | default | False |
 | BLUE | false |
+| GREEN | false |
 | MGMT | false |
 
 ### Static Routes
@@ -668,6 +709,7 @@ ASN Notation: asplain
 | 10.255.255.4 | 65100 | default | - | Inherited from peer group IPv4-UNDERLAY-PEERS | Inherited from peer group IPv4-UNDERLAY-PEERS | - | - | - | - | - | - |
 | 10.255.255.6 | 65100 | default | - | Inherited from peer group IPv4-UNDERLAY-PEERS | Inherited from peer group IPv4-UNDERLAY-PEERS | - | - | - | - | - | - |
 | 10.255.1.96 | Inherited from peer group MLAG-IPv4-UNDERLAY-PEER | BLUE | - | Inherited from peer group MLAG-IPv4-UNDERLAY-PEER | Inherited from peer group MLAG-IPv4-UNDERLAY-PEER | - | - | - | - | - | - |
+| 10.255.1.96 | Inherited from peer group MLAG-IPv4-UNDERLAY-PEER | GREEN | - | Inherited from peer group MLAG-IPv4-UNDERLAY-PEER | Inherited from peer group MLAG-IPv4-UNDERLAY-PEER | - | - | - | - | - | - |
 
 #### Router BGP EVPN Address Family
 
@@ -682,12 +724,14 @@ ASN Notation: asplain
 | VLAN | Route-Distinguisher | Both Route-Target | Import Route Target | Export Route-Target | Redistribute |
 | ---- | ------------------- | ----------------- | ------------------- | ------------------- | ------------ |
 | 11 | 10.255.0.4:10011 | 10011:10011 | - | - | learned |
+| 21 | 10.255.0.4:10021 | 10021:10021 | - | - | learned |
 
 #### Router BGP VRFs
 
 | VRF | Route-Distinguisher | Redistribute |
 | --- | ------------------- | ------------ |
 | BLUE | 10.255.0.4:10 | connected |
+| GREEN | 10.255.0.4:20 | connected |
 
 #### Router BGP Device Configuration
 
@@ -734,6 +778,11 @@ router bgp 65101
       route-target both 10011:10011
       redistribute learned
    !
+   vlan 21
+      rd 10.255.0.4:10021
+      route-target both 10021:10021
+      redistribute learned
+   !
    address-family evpn
       neighbor EVPN-OVERLAY-PEERS activate
    !
@@ -749,6 +798,15 @@ router bgp 65101
       router-id 10.255.0.4
       neighbor 10.255.1.96 peer group MLAG-IPv4-UNDERLAY-PEER
       neighbor 10.255.1.96 description dc1-leaf1a_Vlan3009
+      redistribute connected route-map RM-CONN-2-BGP-VRFS
+   !
+   vrf GREEN
+      rd 10.255.0.4:20
+      route-target import evpn 20:20
+      route-target export evpn 20:20
+      router-id 10.255.0.4
+      neighbor 10.255.1.96 peer group MLAG-IPv4-UNDERLAY-PEER
+      neighbor 10.255.1.96 description dc1-leaf1a_Vlan3019
       redistribute connected route-map RM-CONN-2-BGP-VRFS
 ```
 
@@ -863,6 +921,7 @@ route-map RM-MLAG-PEER-IN permit 10
 | VRF Name | IP Routing |
 | -------- | ---------- |
 | BLUE | enabled |
+| GREEN | enabled |
 | MGMT | disabled |
 
 ### VRF Instances Device Configuration
@@ -870,6 +929,8 @@ route-map RM-MLAG-PEER-IN permit 10
 ```eos
 !
 vrf instance BLUE
+!
+vrf instance GREEN
 !
 vrf instance MGMT
 ```
@@ -881,10 +942,12 @@ vrf instance MGMT
 | Source NAT VRF | Source NAT IPv4 Address | Source NAT IPv6 Address |
 | -------------- | ----------------------- | ----------------------- |
 | BLUE | 10.255.10.4 | - |
+| GREEN | 10.255.20.4 | - |
 
 ### Virtual Source NAT Configuration
 
 ```eos
 !
 ip address virtual source-nat vrf BLUE address 10.255.10.4
+ip address virtual source-nat vrf GREEN address 10.255.20.4
 ```

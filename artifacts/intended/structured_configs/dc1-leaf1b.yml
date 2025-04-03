@@ -98,6 +98,11 @@ loopback_interfaces:
   shutdown: false
   vrf: BLUE
   ip_address: 10.255.10.4/32
+- name: Loopback20
+  description: DIAG_VRF_GREEN
+  shutdown: false
+  vrf: GREEN
+  ip_address: 10.255.20.4/32
 management_api_http:
   enable_https: true
   default_services: false
@@ -255,6 +260,14 @@ router_bgp:
       - 10011:10011
     redistribute_routes:
     - learned
+  - id: 21
+    tenant: ARISTA
+    rd: 10.255.0.4:10021
+    route_targets:
+      both:
+      - 10021:10021
+    redistribute_routes:
+    - learned
   address_family_evpn:
     peer_groups:
     - name: EVPN-OVERLAY-PEERS
@@ -288,6 +301,26 @@ router_bgp:
       connected:
         enabled: true
         route_map: RM-CONN-2-BGP-VRFS
+  - name: GREEN
+    rd: 10.255.0.4:20
+    route_targets:
+      import:
+      - address_family: evpn
+        route_targets:
+        - '20:20'
+      export:
+      - address_family: evpn
+        route_targets:
+        - '20:20'
+    router_id: 10.255.0.4
+    neighbors:
+    - ip_address: 10.255.1.96
+      peer_group: MLAG-IPv4-UNDERLAY-PEER
+      description: dc1-leaf1a_Vlan3019
+    redistribute:
+      connected:
+        enabled: true
+        route_map: RM-CONN-2-BGP-VRFS
 service_routing_protocols_model: multi-agent
 spanning_tree:
   mode: mstp
@@ -303,6 +336,8 @@ transceiver_qsfp_default_mode_4x10: true
 virtual_source_nat_vrfs:
 - name: BLUE
   ip_address: 10.255.10.4
+- name: GREEN
+  ip_address: 10.255.20.4
 vlan_interfaces:
 - name: Vlan4093
   description: MLAG_L3
@@ -331,6 +366,22 @@ vlan_interfaces:
   mtu: 1500
   tenant: ARISTA
   type: underlay_peering
+- name: Vlan21
+  description: VLAN21
+  shutdown: false
+  vrf: GREEN
+  ip_address_virtual: 10.10.21.1/24
+  tenant: ARISTA
+  tags:
+  - LEAF1
+- name: Vlan3019
+  description: MLAG_L3_VRF_GREEN
+  shutdown: false
+  vrf: GREEN
+  ip_address: 10.255.1.97/31
+  mtu: 1500
+  tenant: ARISTA
+  type: underlay_peering
 vlan_internal_order:
   allocation: ascending
   range:
@@ -355,10 +406,21 @@ vlans:
   trunk_groups:
   - MLAG
   tenant: ARISTA
+- id: 21
+  name: VLAN21
+  tenant: ARISTA
+- id: 3019
+  name: MLAG_L3_VRF_GREEN
+  trunk_groups:
+  - MLAG
+  tenant: ARISTA
 vrfs:
 - name: MGMT
   ip_routing: false
 - name: BLUE
+  ip_routing: true
+  tenant: ARISTA
+- name: GREEN
   ip_routing: true
   tenant: ARISTA
 vxlan_interface:
@@ -371,7 +433,11 @@ vxlan_interface:
       vlans:
       - id: 11
         vni: 10011
+      - id: 21
+        vni: 10021
       vrfs:
       - name: BLUE
         vni: 30010
+      - name: GREEN
+        vni: 30020
 serial_number: MTACHEDATACENTER004
