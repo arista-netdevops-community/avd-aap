@@ -20,20 +20,20 @@ tenants:
             name: VLAN12
             enabled: true
             ip_address_virtual: 10.10.12.1/24
-      # - name: GREEN
-      #   vrf_id: 20
-      #   vrf_vni: 30020
-      #   vtep_diagnostic:
-      #     loopback: 20
-      #     loopback_ip_range: 10.255.20.0/27
-      #   svis:
-      #     - id: 21
-      #       name: VLAN21
-      #       tags: [ LEAF1 ]
-      #       enabled: true
-      #       ip_address_virtual: 10.10.21.1/24
-      #     - id: 22
-      #       name: VLAN22
-      #       tags: [ LEAF2 ]
-      #       enabled: true
-      #       ip_address_virtual: 10.10.22.1/24
+      - name: GREEN
+        vrf_id: 20
+        vrf_vni: 30020
+        vtep_diagnostic:
+          loopback: 20
+          loopback_ip_range: 10.255.20.0/27
+        svis:
+          - id: 21
+            name: VLAN21
+            tags: [ LEAF1 ]
+            enabled: true
+            ip_address_virtual: 10.10.21.1/24
+          - id: 22
+            name: VLAN22
+            tags: [ LEAF2 ]
+            enabled: true
+            ip_address_virtual: 10.10.22.1/24
